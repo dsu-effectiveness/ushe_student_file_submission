@@ -11,15 +11,18 @@ knitr::opts_chunk$set(
 )
 ```
 
+### File Description 
+* The Students Data Submission File contains demographic records for all the students for a particular extract. It is submitted five 
+times per fiscal year (Summer End of Term (EOT), Fall 3rd Week, Fall EOT, Spring 3rd Week, and Spring End of Term EOT.
 
-# Introduction
-Add text up here to explain what this file is, and how to use it. 
+* This information is found in **Edify** Utah Tech's data-warehouse and is complied using R package **usheUtils**     
 
 # {.tabset}
 
-## Walk though
 
-In this section we will pull in the data from Edify, and then pipe each function. The goal here is to enable someone to check the process at each step. 
+## Walk though 
+
+
 
 load these libraries
 ```{r load libraries}
@@ -31,23 +34,27 @@ library(utHelpR)
 library(usheUtils)
 ```
 
-Here we are using the utHelp package with the get_data_from_sql_file function. 
+Here we are using the **utHelp** package with the **get_data_from_sql_file** function. 
 ```{r, echo = FALSE}
 student_file <- utHelpR::get_data_from_sql_file(file_name="student_file_with_versioning.sql",
                                                dsn="edify",
                                                context="project")
 ```
 
-Here is where you pick the term and version you want to use
+Here is where you pick the term and version you want to use.
+
+* term is the year (YYYY) + the semester where 30 = summer, 40 = fall, 20 = spring
+
+* version is the snapshot data at any given time during the semester: Current = current, Census = 3rd week, and End of Term = end of term. 
 ```{r}
-term <- '202220'
-version <- 'Current'
+term <- '202220' # replace this with the term you want to report on
+version <- 'Current' # replace this with the version you want to report on
 
 student_file <- student_file %>% 
   filter(term_id == term & version_desc == version)
 ```
   
-Here we will see what each usheUtils function for the USHE Student file Submission,
+Here we will see what each **usheUtils** function for the USHE Student file Submission, 
 
 ```{r}
 
@@ -99,7 +106,7 @@ student_file_check <- student_file %>%
   # s_45()
 
 ```
-These data points can be checked using the USHE documentation found in the Office of Institutional Effectiveness shared google drive (https://docs.google.com/document/d/1C8QkgIpr7Qc6C--vXvdNXFX0ILFP9Gzl0cFUC-I72uo/edit)
+These data points can be checked using the USHE documentation found in the Office of Institutional Effectiveness shared Google drive (https://docs.google.com/document/d/1C8QkgIpr7Qc6C--vXvdNXFX0ILFP9Gzl0cFUC-I72uo/edit)
 
 ```{r}
 #DT::datatable(student_file_check, rownames=FALSE)
@@ -196,3 +203,29 @@ Here is the sql used for these functions...
       AND a.is_enrolled = TRUE
  ORDER BY student_id;
 ```
+
+## USHE Documentation on submission
+
+### Submission Schedule 
+* The file must be submitted to Utah Board of Higher Education as follows: 
++ Data 1st Submission Verification 
++ Summer EOT October 8th October 15th  
++ Fall 3rd Week September 24th October 1st 
++ Fall EOT January 14th January 21st 
++ Spring 3rd Week February 4th February 11th 
++ Spring EOT June 10th June 17th
+
+### Capture Date 
+* The capture date for each 3rd-Week extract is the 3rd-Week date of the Semester. The capture  date for each EOT is the end of the respective term. 
+
+### Submission File Naming Convention 
+* The Students Data Submission File should be named as follows: 
++ School short name (hyphen) file description (s for students) (hyphen) year/term extension  (093 for 2009 and third term) extract period (3 for 3rd-Week or E for EOT) .txt file  extension 
++ Example: wsu-s-0933.txt for Weber State University’s 3rd Week Students File for Spring  (2008-2009). 
+
+### Delimiter
+* The Students Data Submission File must be submitted in a pipe delimited format. A single pipe  symbol ‘|’ will be used as the delimiter. When submitting a delimited file, the pipe symbol must  appear between each field in the file (Note: some data elements will have multiple fields, e.g.  ethnicity has 8 fields).
+
+
+
+Full USHE documentation can be found in the Office of Institutional Effectiveness shared Google drive (https://docs.google.com/document/d/1C8QkgIpr7Qc6C--vXvdNXFX0ILFP9Gzl0cFUC-I72uo/edit)
