@@ -1,0 +1,20 @@
+---
+title: "USHE Student File Submission"
+author: Craig Demke
+output: html_document
+date: '2022-07-13'
+---
+
+# tabs {.tabset}
+
+## Walk though
+
+In this section we will pull in the data from Edify, and then pipe each function. The goal here is to enable someone to check the process at each step. 
+
+## Generate the script
+
+This tab runs all the functions, and outputs the file to send to USHE.
+
+## USHE return file
+
+Not sure what this is yet.
