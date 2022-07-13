@@ -41,11 +41,13 @@ student_file <- utHelpR::get_data_from_sql_file(file_name="student_file_with_ver
                                                context="project")
 ```
 
-Here is where you pick the term and version you want to use.
+Here is where you update the term and version you want to use.
 
 * term is the year (YYYY) + the semester where 30 = summer, 40 = fall, 20 = spring
 
 * version is the snapshot data at any given time during the semester: Current = current, Census = 3rd week, and End of Term = end of term. 
+
+*  For example, if you want to report on the 3rd week data for summer 2025 you will need replace (type-in) the term *202530* and the version *Census*.
 ```{r}
 term <- '202220' # replace this with the term you want to report on
 version <- 'Current' # replace this with the version you want to report on
@@ -61,49 +63,50 @@ Here we will see what each **usheUtils** function for the USHE Student file Subm
 student_file_check <- student_file %>%  
   s_01() %>% # Institution
   s_02() %>% # Year, Term, & Extract
-  # s_03() %>%
-  # s_04() %>%
-  # s_05() %>%
-  # s_06() %>%
-  # s_07() %>%
-  # s_08() %>%
-  # s_09() %>%
-  # s_10() %>%
-  # s_11() %>%
+  s_03() %>%
+  s_04() %>%
+  s_05() %>%
+  s_06() %>%
+  s_07() %>%
+  s_08() %>%
+  s_09() %>%
+  s_10() %>%
+  s_11() %>%
   s_12() %>%  # Birth Date
- #s_13() %>%
-  s_14() #%>% # Ethnic Origin
-  # s_15() %>%
-  # s_16() %>%
-  # s_17() %>%
-  # s_18() %>%
-  # s_19() %>%
-  # s_20() %>%
-  # s_21() %>%
-  # s_22() %>%
-  # s_23() %>%
-  # s_24() %>%
-  # s_25() %>%
-  # s_26() %>%
-  # s_27() %>%
-  # s_28() %>%
-  # s_29() %>%
-  # s_30() %>%
-  # s_31() %>%
-  # s_32() %>%
-  # s_33() %>%
-  # s_34() %>%
-  # s_35() %>%
-  # s_36() %>%
-  # s_37() %>%
-  # s_38() %>%
-  # s_39() %>%
-  # s_40() %>%
-  # s_41() %>%
-  # s_42() %>%
-  # s_43() %>%
-  # s_44() %>%
-  # s_45()
+  s_13() %>%
+  s_14() %>% # Ethnic Origin
+  s_15() %>%
+  s_16() %>%
+  s_17() %>%
+  s_18() %>%
+  s_19() %>%
+  s_20() %>%
+  s_21() %>%
+  s_22() %>%
+  s_23() %>%
+  s_24() %>%
+  s_25() %>%
+  s_26() %>%
+  s_27() %>%
+  s_28() %>%
+  s_29() %>%
+  s_30() %>%
+  s_31() %>%
+  s_32() %>%
+  s_33() %>%
+  s_34() %>%
+  s_35() %>%
+  s_36() %>%
+  s_37() %>%
+  s_38() %>%
+  s_39() %>%
+  s_40() %>%
+  s_41() %>%
+  s_42() %>%
+  s_43() %>%
+  s_44() %>% 
+  s_45()
+
 
 ```
 These data points can be checked using the USHE documentation found in the Office of Institutional Effectiveness shared Google drive (https://docs.google.com/document/d/1C8QkgIpr7Qc6C--vXvdNXFX0ILFP9Gzl0cFUC-I72uo/edit)
@@ -133,16 +136,19 @@ Not sure what this is yet.
 Here is the sql used for these functions...
 ```{}
 /* Student File with versioning */
-   SELECT c.season,
+   SELECT c.season, 
           a.student_id,
-          b.ssn,
+          b.ssn AS student_ssn,
+          b.ssn AS student_ssid,
           b.previous_student_id,
+          b.name_suffix,
           b.last_name,
           b.first_name,
           b.last_name,
           b.middle_name,
+          '' AS previous_name_suffix,
           b.previous_last_name,
-          b.preferred_first_name,
+          b.previous_first_name,
           b.previous_middle_name,
           b.local_address_zip_code,
           b.mailing_address_zip_code,
@@ -162,24 +168,27 @@ Here is the sql used for these functions...
           b.is_other_race,
           a.residency_code,
           a.primary_major_cip_code,
+          a.primary_major_desc,
           a.student_type_code,
           a.primary_level_class_id,
           a.primary_degree_id,
           a.institutional_cumulative_credits_earned,
           a.institutional_cumulative_gpa,
+          a.institutional_cumulative_gpa AS institutional_gpa,
           COALESCE(a.transfer_cumulative_credits_earned, 0) AS transfer_cumulative_credits_earned,
           a.full_time_part_time_code,
           b.first_admit_country_iso_code,
           a.house_bill_75_waiver,
           a.secondary_major_cip_code,
+          a.secondary_major_desc,
           COALESCE(a.total_cumulative_ap_credits_earned, 0) AS total_cumulative_ap_credits_earned,
           COALESCE(a.total_cumulative_clep_credits_earned, 0) AS total_cumulative_clep_credits_earned,
           b.act_composite_score,
           b.act_english_score,
           b.act_math_score,
-          b.act_reading_score,
+          b.act_reading_score AS act_read_score,
           b.act_science_score,
-          b.high_school_code,
+          b.high_school_code AS latest_high_school_code,
           b.high_school_desc,
           b.high_school_graduation_date,
           a.is_pell_eligible,
@@ -191,7 +200,10 @@ Here is the sql used for these functions...
           a.secondary_major_college_desc,
           a.level_id,
           a.term_id,
-          b.version_desc
+          c.academic_year_code AS academic_year,
+          b.version_id,
+          b.version_desc,
+          b.version_date
      FROM export.student_term_level_version a
     LEFT JOIN export.term c
         ON a.term_id = c.term_id
