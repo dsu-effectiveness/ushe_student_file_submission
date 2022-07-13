@@ -15,6 +15,18 @@ Add text up here to explain what this file is, and how to use it.
 
 In this section we will pull in the data from Edify, and then pipe each function. The goal here is to enable someone to check the process at each step. 
 
+```{r, echo = FALSE}
+## pull in the data set
+```
+
+```{r}
+# data frame containing the pull %>% 
+# s1() %>% 
+# s2()
+```
+
+
+
 ## Generate the script
 
 This tab runs all the functions, and outputs the file to send to USHE.
