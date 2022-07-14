@@ -2,39 +2,246 @@
 title: "USHE Student File Submission"
 author: Craig Demke
 output: html_document
-date: '2022-07-13'
+date: "`r Sys.Date()`"
 ---
 
-# Introduction
- 
-Add text up here to explain what this file is, and how to use it. 
+```{r set global chunks, include=FALSE}
+knitr::opts_chunk$set(
+  warning = FALSE, message = FALSE
+)
+```
+
+### File Description 
+* The Students Data Submission File contains demographic records for all the students for a particular extract. It is submitted five 
+times per fiscal year (Summer End of Term (EOT), Fall 3rd Week, Fall EOT, Spring 3rd Week, and Spring End of Term EOT.
+
+* This information is found in **Edify** Utah Tech's data-warehouse and is complied using R package **usheUtils**     
 
 # {.tabset}
 
-## Walk though
 
-In this section we will pull in the data from Edify, and then pipe each function. The goal here is to enable someone to check the process at each step. 
+## Walk though 
 
-```{r, echo = FALSE}
-## pull in the data set
+
+
+load these libraries
+```{r load libraries}
+library(tidyverse)
+library(datasets)
+library(DT)
+library(here)
+library(utHelpR)
+library(usheUtils)
 ```
+
+Here we are using the **utHelp** package with the **get_data_from_sql_file** function. 
+```{r, echo = FALSE}
+student_file <- utHelpR::get_data_from_sql_file(file_name="student_file_with_versioning.sql",
+                                               dsn="edify",
+                                               context="project")
+```
+
+Here is where you update the term and version you want to use.
+
+* term is the year (YYYY) + the semester where 30 = summer, 40 = fall, 20 = spring
+
+* version is the snapshot data at any given time during the semester: Current = current, Census = 3rd week, and End of Term = end of term. 
+
+*  For example, if you want to report on the 3rd week data for summer 2025 you will need replace (type-in) the term *202530* and the version *Census*.
+```{r}
+term <- '202220' # replace this with the term you want to report on
+version <- 'Current' # replace this with the version you want to report on
+
+student_file <- student_file %>% 
+  filter(term_id == term & version_desc == version)
+```
+  
+Here we will see what each **usheUtils** function for the USHE Student file Submission, 
 
 ```{r}
-# data frame containing the pull %>% 
-# s1() %>% 
-# s2()
+
+student_file_check <- student_file %>%  
+  s_01() %>% # Institution
+  s_02() %>% # Year, Term, & Extract
+  s_03() %>% # Student ID
+  s_04() %>% # Student ID Flag
+  s_05() %>% # Previous ID
+  s_06() %>% # Name
+  s_07() %>% # Student Previous Name
+  s_08() %>% # Zip Code
+  s_09() %>% # Citizenship code
+  s_10() %>% # Utah County Code
+  s_11() %>% # State Origin Code
+  s_12() %>% # Birth Date
+  s_13() %>% # Gender
+  s_14() %>% # Ethnic Origin
+  s_15() %>% # Residency
+  s_16() %>% # CIP Code
+  s_17() %>% # Registration Status
+  s_18() %>% # Class Level
+  s_19() %>% # Degree Intent
+  s_20() %>% # Total Cumulative Undergrad Hrs
+  s_21() %>% # Cumulative Inst Undergrad GPA
+  s_22() %>% # Total Cumulative Inst Grad Hrs
+  s_23() %>% # Cumulative Inst Grad GPA
+  s_24() %>% # Total Cum U-grad Transfer Hrs  Accepted
+  s_25() %>% # Part-time/Full-time
+  s_26() %>% # Age
+  s_27() %>% # Country Origin Codes
+  s_28() %>% # High School Codes
+  s_29() %>% # Non Resident Tuition Waiver
+  s_30() %>% # CIP Code for Second Major
+  s_31() %>% # Cumulative Membership Hours
+  s_32() %>% # Total Cum U-grad CLEP Cr Accepted
+  s_33() %>% # Total Cum U-grad AP Cr Accepted
+  s_34() %>% # SSID (USOE Unique ID)
+  s_35() %>% # Institution Assigned ID
+  s_36() %>% # ACT Composite Score
+  s_37() %>% # Student's Long-term Intended CIP
+  s_38() %>% # ACT English Sub-score
+  s_39() %>% # ACT Math Sub-score
+  s_40() %>% # ACT Reading Sub-score
+  s_41() %>% # ACT Science Sub-score
+  s_42() %>% # High School Graduating Date
+  s_43() %>% # Term GPA
+  s_44() %>% # Pell Indicator
+  s_45()     # BIA Flag 
+
+
+```
+These data points can be checked using the USHE documentation found in the Office of Institutional Effectiveness shared Google drive (https://docs.google.com/document/d/1C8QkgIpr7Qc6C--vXvdNXFX0ILFP9Gzl0cFUC-I72uo/edit)
+
+```{r}
+#DT::datatable(student_file_check, rownames=FALSE)
 ```
 
-
-
 ## Generate the script
-
 This tab runs all the functions, and outputs the file to send to USHE.
+
+```{r}
+student_file_complete <- generate_student_submission_file(student_file)
+
+```
+here you can see what it will look like
+```{r}
+DT::datatable(student_file_complete, rownames=FALSE)
+```
+Here you can see what each function needs.
+```{r}
+?generate_student_submission_file()
+```
+
 
 ## USHE return file
 
 Not sure what this is yet.
 
 ## SQL
+Here is the sql used for these functions...
+```{}
+/* Student File with versioning */
+   SELECT c.season, 
+          a.student_id,
+          b.ssn AS student_ssn,
+          b.ssn AS student_ssid,
+          b.previous_student_id,
+          b.name_suffix,
+          b.last_name,
+          b.first_name,
+          b.last_name,
+          b.middle_name,
+          '' AS previous_name_suffix,
+          b.previous_last_name,
+          b.previous_first_name,
+          b.previous_middle_name,
+          b.local_address_zip_code,
+          b.mailing_address_zip_code,
+          b.us_citizenship_code,
+          b.first_admit_county_code,
+          b.first_admit_state_code,
+          b.first_admit_country_code,
+          b.birth_date,
+          b.gender_code,
+          b.is_hispanic_latino_ethnicity,
+          b.is_asian,
+          b.is_black,
+          b.is_american_indian_alaskan,
+          b.is_hawaiian_pacific_islander,
+          b.is_white,
+          b.is_international,
+          b.is_other_race,
+          a.residency_code,
+          a.primary_major_cip_code,
+          a.primary_major_desc,
+          a.student_type_code,
+          a.primary_level_class_id,
+          a.primary_degree_id,
+          a.institutional_cumulative_credits_earned,
+          a.institutional_cumulative_gpa,
+          a.institutional_cumulative_gpa AS institutional_gpa,
+          COALESCE(a.transfer_cumulative_credits_earned, 0) AS transfer_cumulative_credits_earned,
+          a.full_time_part_time_code,
+          b.first_admit_country_iso_code,
+          a.house_bill_75_waiver,
+          a.secondary_major_cip_code,
+          a.secondary_major_desc,
+          COALESCE(a.total_cumulative_ap_credits_earned, 0) AS total_cumulative_ap_credits_earned,
+          COALESCE(a.total_cumulative_clep_credits_earned, 0) AS total_cumulative_clep_credits_earned,
+          b.act_composite_score,
+          b.act_english_score,
+          b.act_math_score,
+          b.act_reading_score AS act_read_score,
+          b.act_science_score,
+          b.high_school_code AS latest_high_school_code,
+          b.high_school_desc,
+          b.high_school_graduation_date,
+          a.is_pell_eligible,
+          a.is_pell_awarded,
+          a.is_bia,
+          a.primary_major_college_id,
+          a.primary_major_college_desc,
+          a.secondary_major_college_id,
+          a.secondary_major_college_desc,
+          a.level_id,
+          a.term_id,
+          c.academic_year_code AS academic_year,
+          b.version_id,
+          b.version_desc,
+          b.version_date
+     FROM export.student_term_level_version a
+    LEFT JOIN export.term c
+        ON a.term_id = c.term_id
+    LEFT JOIN export.student_version b
+       ON b.student_id = a.student_id
+      AND b.version_snapshot_id = a.version_snapshot_id
+    WHERE a.term_id >= (SELECT term_id FROM export.term WHERE is_previous_term)
+      AND a.is_primary_level = TRUE
+      AND a.is_enrolled = TRUE
+ ORDER BY student_id;
+```
 
-Add SQL script here
+## USHE Documentation on submission
+
+### Submission Schedule 
+* The file must be submitted to Utah Board of Higher Education as follows: 
++ Data 1st Submission Verification 
++ Summer EOT October 8th October 15th  
++ Fall 3rd Week September 24th October 1st 
++ Fall EOT January 14th January 21st 
++ Spring 3rd Week February 4th February 11th 
++ Spring EOT June 10th June 17th
+
+### Capture Date 
+* The capture date for each 3rd-Week extract is the 3rd-Week date of the Semester. The capture  date for each EOT is the end of the respective term. 
+
+### Submission File Naming Convention 
+* The Students Data Submission File should be named as follows: 
++ School short name (hyphen) file description (s for students) (hyphen) year/term extension  (093 for 2009 and third term) extract period (3 for 3rd-Week or E for EOT) .txt file  extension 
++ Example: wsu-s-0933.txt for Weber State University’s 3rd Week Students File for Spring  (2008-2009). 
+
+### Delimiter
+* The Students Data Submission File must be submitted in a pipe delimited format. A single pipe  symbol ‘|’ will be used as the delimiter. When submitting a delimited file, the pipe symbol must  appear between each field in the file (Note: some data elements will have multiple fields, e.g.  ethnicity has 8 fields).
+
+
+
+Full USHE documentation can be found in the Office of Institutional Effectiveness shared Google drive (https://docs.google.com/document/d/1C8QkgIpr7Qc6C--vXvdNXFX0ILFP9Gzl0cFUC-I72uo/edit)
