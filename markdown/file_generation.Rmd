@@ -63,49 +63,49 @@ Here we will see what each **usheUtils** function for the USHE Student file Subm
 student_file_check <- student_file %>%  
   s_01() %>% # Institution
   s_02() %>% # Year, Term, & Extract
-  s_03() %>%
-  s_04() %>%
-  s_05() %>%
-  s_06() %>%
-  s_07() %>%
-  s_08() %>%
-  s_09() %>%
-  s_10() %>%
-  s_11() %>%
-  s_12() %>%  # Birth Date
-  s_13() %>%
+  s_03() %>% # Student ID
+  s_04() %>% # Student ID Flag
+  s_05() %>% # Previous ID
+  s_06() %>% # Name
+  s_07() %>% # Student Previous Name
+  s_08() %>% # Zip Code
+  s_09() %>% # Citizenship code
+  s_10() %>% # Utah County Code
+  s_11() %>% # State Origin Code
+  s_12() %>% # Birth Date
+  s_13() %>% # Gender
   s_14() %>% # Ethnic Origin
-  s_15() %>%
-  s_16() %>%
-  s_17() %>%
-  s_18() %>%
-  s_19() %>%
-  s_20() %>%
-  s_21() %>%
-  s_22() %>%
-  s_23() %>%
-  s_24() %>%
-  s_25() %>%
-  s_26() %>%
-  s_27() %>%
-  s_28() %>%
-  s_29() %>%
-  s_30() %>%
-  s_31() %>%
-  s_32() %>%
-  s_33() %>%
-  s_34() %>%
-  s_35() %>%
-  s_36() %>%
-  s_37() %>%
-  s_38() %>%
-  s_39() %>%
-  s_40() %>%
-  s_41() %>%
-  s_42() %>%
-  s_43() %>%
-  s_44() %>% 
-  s_45()
+  s_15() %>% # Residency
+  s_16() %>% # CIP Code
+  s_17() %>% # Registration Status
+  s_18() %>% # Class Level
+  s_19() %>% # Degree Intent
+  s_20() %>% # Total Cumulative Undergrad Hrs
+  s_21() %>% # Cumulative Inst Undergrad GPA
+  s_22() %>% # Total Cumulative Inst Grad Hrs
+  s_23() %>% # Cumulative Inst Grad GPA
+  s_24() %>% # Total Cum U-grad Transfer Hrs  Accepted
+  s_25() %>% # Part-time/Full-time
+  s_26() %>% # Age
+  s_27() %>% # Country Origin Codes
+  s_28() %>% # High School Codes
+  s_29() %>% # Non Resident Tuition Waiver
+  s_30() %>% # CIP Code for Second Major
+  s_31() %>% # Cumulative Membership Hours
+  s_32() %>% # Total Cum U-grad CLEP Cr Accepted
+  s_33() %>% # Total Cum U-grad AP Cr Accepted
+  s_34() %>% # SSID (USOE Unique ID)
+  s_35() %>% # Institution Assigned ID
+  s_36() %>% # ACT Composite Score
+  s_37() %>% # Student's Long-term Intended CIP
+  s_38() %>% # ACT English Sub-score
+  s_39() %>% # ACT Math Sub-score
+  s_40() %>% # ACT Reading Sub-score
+  s_41() %>% # ACT Science Sub-score
+  s_42() %>% # High School Graduating Date
+  s_43() %>% # Term GPA
+  s_44() %>% # Pell Indicator
+  s_45()     # BIA Flag 
 
 
 ```
@@ -125,6 +125,10 @@ student_file_complete <- generate_student_submission_file(student_file)
 here you can see what it will look like
 ```{r}
 DT::datatable(student_file_complete, rownames=FALSE)
+```
+Here you can see what each function needs.
+```{r}
+?generate_student_submission_file()
 ```
 
 
