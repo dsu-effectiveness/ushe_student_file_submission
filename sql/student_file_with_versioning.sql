@@ -2,7 +2,7 @@
    SELECT c.season, 
           a.student_id,
           b.ssn AS student_ssn,
-          b.ssn AS student_ssid,
+          b.ssid,
           b.previous_student_id,
           b.name_suffix,
           b.last_name,
@@ -77,5 +77,6 @@
       AND a.is_primary_level = TRUE
       AND a.is_enrolled = TRUE
  ORDER BY student_id;
+
 
 
