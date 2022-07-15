@@ -2,7 +2,7 @@
    SELECT c.season, 
           a.student_id,
           b.ssn AS student_ssn,
-          b.ssid,
+          b.ssid AS student_ssid,
           b.previous_student_id,
           b.name_suffix,
           b.last_name,
