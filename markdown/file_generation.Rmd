@@ -121,6 +121,11 @@ This tab runs all the functions, and outputs the file to send to USHE.
 ```{r}
 student_file_complete <- generate_student_submission_file(student_file)
 
+
+view(student_file_complete)
+
+#write.table(student_file_complete2, sep = "|", file = here::here("sensitive", "ut-sd-2022.txt"), row.names = FALSE, col.names = FALSE, quote = FALSE)
+
 ```
 here you can see what it will look like
 ```{r}
